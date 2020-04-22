@@ -1,0 +1,544 @@
+let mapleader = " "
+set number
+let &t_ut=''
+"set mouse=a
+set tabstop=4
+set softtabstop=4
+set shiftwidth=4
+set textwidth=79
+set fileformat=unix
+set expandtab
+set list
+set listchars=tab:▸\ ,trail:▫
+set autoindent
+set cursorline
+set wrap
+set showcmd
+set wildmenu
+set ignorecase
+set smartcase
+set showmatch
+set backspace=indent,eol,start
+set foldmethod=indent
+set foldlevel=99
+set encoding=utf-8
+set laststatus=2
+set autochdir
+set scrolloff=8
+set relativenumber
+set signcolumn=yes
+set hlsearch
+set nocompatible
+filetype on
+filetype indent on
+filetype plugin on
+filetype plugin indent on
+
+
+" 基于缩进或语法进行代码折叠
+"set foldmethod=indent
+set foldmethod=syntax
+" 启动 vim 时关闭折叠代码
+set nofoldenable
+
+
+
+"set splitbelow
+au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+let &t_SI = "\<Esc>]50;CursorShape=1\x7"
+let &t_SR = "\<Esc>]50;CursorShape=2\x7"
+let &t_EI = "\<Esc>]50;CursorShape=0\x7"
+
+"F5编译
+map <F5> :call CompileRunGcc()<CR>
+func! CompileRunGcc()
+  exec "w"
+  if &filetype == 'c'
+    exec "!g++ % -o %<"
+    exec "!time ./%<"
+  elseif &filetype == 'cpp'
+    set splitbelow
+    exec "!g++ -std=c++11 % -Wall -o %<"
+    :sp
+    :res -15
+    :term ./%<
+  elseif &filetype == 'java'
+    exec "!javac %"
+    exec "!time java %<"
+  elseif &filetype == 'sh'
+    :!time bash %
+  elseif &filetype == 'python'
+    set splitbelow
+    :sp
+    :term python3 %
+  elseif &filetype == 'html'
+    silent! exec "!chromium % &"
+  elseif &filetype == 'markdown'
+    exec "MarkdownPreview"
+  elseif &filetype == 'tex'
+    silent! exec "VimtexStop"
+    silent! exec "VimtexCompile"
+  elseif &filetype == 'go'
+    set splitbelow
+    :sp
+    :term go run %
+  endif
+endfunc    
+
+" 退出 方向键映射
+map s <nop>
+map S :w<CR>
+map Q :q<CR>
+map R :source $MYVIMRC<CR>
+"noremap h i
+"noremap i k
+"noremap k j
+"noremap j h
+"noremap H I
+noremap <LEADER>z :nohlsearch<CR>
+
+" 开新窗口
+map sl :set splitright<CR>:vsplit<CR>
+map sh :set nosplitright<CR>:vsplit<CR>
+map sj :set splitbelow<CR>:split<CR>
+map sk :set nosplitbelow<CR>:split<CR>
+
+" 窗口位置变换
+map sv <C-w>t<C-w>H
+map sh <C-w>t<c-w>K
+map <LEADER>k <C-w>k
+map <LEADER>j <C-w>j
+map <LEADER>h <C-w>h
+map <LEADER>l <C-w>l
+
+" 调整窗口大小
+map <up> :res +5<CR>
+map <down> :res -5<CR>
+map <left> :vertical resize-5<CR>
+map <right> :vertical resize+5<CR>
+
+" 拼写检查 新开窗口
+map sc :set spell!<CR>  
+map tk :tabe<CR>
+map th :-tabnext<CR>
+map tl :+tabnext<CR>
+
+
+
+" 插件''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+call plug#begin('~/.vim/plugged')
+
+" 美化
+Plug 'flazz/vim-colorschemes'
+
+" 状态栏
+Plug 'bling/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+
+" 开始屏幕
+Plug 'mhinz/vim-startify'
+
+" 主题选择
+Plug 'tomasr/molokai'
+Plug 'morhetz/gruvbox'
+
+" 文件树
+Plug 'scrooloose/nerdtree'
+Plug 'Xuyuanp/nerdtree-git-plugin'
+
+" 文件搜索
+Plug 'Yggdroot/LeaderF'
+
+" 语法检查
+Plug 'w0rp/ale'
+
+" 括号补全
+Plug 'jiangmiao/auto-pairs'
+
+" 代码注释
+Plug 'scrooloose/nerdcommenter'
+"\cc註釋當前行 \cu 撤銷註釋當前行 \cs sexily註釋 \cA 行尾註釋，切換成輸入模式
+
+
+" 自动补全
+Plug 'ervandew/supertab'
+
+" 自动弹出
+Plug 'vim-scripts/AutoComplPop'
+
+
+" 符号索引
+Plug 'universal-ctags/ctags'
+" 自动索引
+Plug 'ludovicchabant/vim-gutentags'   
+
+
+" 语法高亮
+Plug 'octol/vim-cpp-enhanced-highlight'
+
+" 修改比较
+Plug 'mhinz/vim-signify'
+
+" 代码补全
+Plug 'Valloric/YouCompleteMe', { 'do': './install.py --clang-completer --go-completer'  }
+Plug 'Shougo/echodoc.vim'
+
+Plug 'derekwyatt/vim-fswitch'
+"Plug 'vim-scripts/a.vim'
+"Plug 'justinmk/vim-dirvish'
+
+Plug 'kshenoy/vim-signature'
+call plug#end()
+
+" 参数列表''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+set noshowmode
+set cmdheight=2
+let g:echodoc_enable_at_startup = 1
+
+nmap <silent> <Leader>sw :FSHere<cr>
+
+
+
+" 语法高亮 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+let c_no_curly_error = 1
+
+
+" 修改比较''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+let g:signify_vcs_list = [ 'git'  ]
+let g:signify_sign_show_text = 1
+map bj :SignifyDiff<CR>  
+
+
+" 代码补全'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''' 
+let g:ycm_global_ycm_extra_conf='~/.vim/plugged/YouCompleteMe/third_party/ycmd/examples/.ycm_extra_conf.py'
+"let g:ycm_autoclose_preview_window_after_completion = 1 
+"let g:ycm_autoclose_preview_window_after_insertion = 1
+let g:ycm_add_preview_to_completeopt = 0
+let g:ycm_show_diagnostics_ui = 0
+let g:ycm_server_log_level = 'info'
+let g:ycm_min_num_identifier_candidate_chars = 2
+let g:ycm_collect_identifiers_from_comments_and_strings = 1
+let g:ycm_complete_in_strings=1
+let g:ycm_key_invoke_completion = '<c-z>'                    " 使用 Ctrl+Z 主动触发语义补全
+noremap <c-z> <NOP>
+set completeopt=menu,menuone
+
+" 修改补全列表配色
+highlight PMenu ctermfg=0 ctermbg=242 guifg=black guibg=darkgrey
+highlight PMenuSel ctermfg=242 ctermbg=8 guifg=darkgrey guibg=black
+
+" 对指定源文件，输入两个字母后即触发语义补全
+let g:ycm_semantic_triggers =  {
+           \ 'c,cpp,python,java,go,erlang,perl': ['re!\w{2}'],
+           \ 'cs,lua,javascript': ['re!\w{2}'],
+           \ }
+
+let g:ycm_filetype_whitelist = { 
+            \ "c":1,
+            \ "cpp":1, 
+            \ "go":1,
+            \ "python":1,
+            \ "sh":1,
+            \ "zsh":1,
+            \ }
+
+let g:ycm_filetype_blacklist = {
+        \ 'markdown' : 1,
+        \ 'text' : 1,
+        \ 'pandoc' : 1,
+        \ 'infolog' : 1,
+        \}"
+"
+"
+nnoremap gd :YcmCompleter GoToDefinitionElseDeclaration<CR>
+nnoremap g/ :YcmCompleter GetDoc<CR>
+nnoremap gt :YcmCompleter GetType<CR>
+nnoremap gr :YcmCompleter GoToReferences<CR>
+"
+"
+"
+"
+" 符号索引 自动索引''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+" gutentags 搜索工程目录的标志，碰到这些文件/目录名就停止向上一级目录递归
+set tags=./.tags;,.tags
+let g:gutentags_project_root = ['.root', '.svn', '.git', '.hg', '.project']
+" " 所生成的数据文件的名称
+let g:gutentags_ctags_tagfile = '.tags'
+" " 将自动生成的 tags 文件全部放入 ~/.cache/tags 目录中，避免污染工程目录
+let s:vim_tags = expand('~/.cache/tags')
+let g:gutentags_cache_dir = s:vim_tags
+" " 配置 ctags 的参数
+let g:gutentags_ctags_extra_args = ['--fields=+niazS', '--extra=+q']
+let g:gutentags_ctags_extra_args += ['--c++-kinds=+px']
+let g:gutentags_ctags_extra_args += ['--c-kinds=+px']
+" " 检测 ~/.cache/tags 不存在就新建
+if !isdirectory(s:vim_tags)
+    silent! call mkdir(s:vim_tags, 'p')
+endif
+"
+"
+"
+"
+"
+"
+" 加强版状态栏 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+let g:airline_theme='molokai'
+
+" 字体
+let g:airline_powerline_fonts = 1
+
+" 关闭空格计数
+let g:airline#extensions#whitespace#enabled = 0
+let g:airline#extensions#whitespace#symbol = '!'
+
+" 开启tabline
+
+let g:airline#extensions#tabline#enabled = 1
+
+" tabline中buffer顯示編號
+let g:airline#extensions#tabline#buffer_nr_show = 1
+
+" 书签''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+let g:SignatureMap = {
+        \ 'Leader'             :  "m",
+        \ 'PlaceNextMark'      :  "m,",
+        \ 'ToggleMarkAtLine'   :  "m.",
+        \ 'PurgeMarksAtLine'   :  "dm-",
+        \ 'DeleteMark'         :  "dm",
+        \ 'PurgeMarks'         :  "dm/",
+        \ 'PurgeMarkers'       :  "dm?",
+        \ 'GotoNextLineAlpha'  :  "m<LEADER>",
+        \ 'GotoPrevLineAlpha'  :  "",
+        \ 'GotoNextSpotAlpha'  :  "m<LEADER>",
+        \ 'GotoPrevSpotAlpha'  :  "",
+        \ 'GotoNextLineByPos'  :  "",
+        \ 'GotoPrevLineByPos'  :  "",
+        \ 'GotoNextSpotByPos'  :  "mn",
+        \ 'GotoPrevSpotByPos'  :  "mp",
+        \ 'GotoNextMarker'     :  "",
+        \ 'GotoPrevMarker'     :  "",
+        \ 'GotoNextMarkerAny'  :  "",
+        \ 'GotoPrevMarkerAny'  :  "",
+        \ 'ListLocalMarks'     :  "m/",
+        \ 'ListLocalMarkers'   :  "m?"
+        \ }
+
+
+
+" 配色 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+set background=dark
+"colorscheme solarized
+colorscheme molokai
+"colorscheme gruvbox
+"colorscheme phd
+
+
+
+
+
+" 文件树 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+" 使用 NERDTree 插件查看工程文件。
+nmap ff :NERDTreeToggle<CR>
+
+"  設置 NERDTree 子窗口寬度
+let NERDTreeWinSize=28
+"" 設置 NERDTree 子窗口位置
+let NERDTreeWinPos="left"
+" 顯示隱藏文件
+let NERDTreeShowHidden=1
+" " NERDTree 子窗口中不顯示冗余幫助信息
+let NERDTreeMinimalUI=1
+"刪除文件時自動刪除文件對應 buffer
+let NERDTreeAutoDeleteBuffer=1"
+
+let g:NERDTreeIndicatorMapCustom = {
+    \ "Modified"  : "✹",
+    \ "Staged"    : "✚",
+    \ "Untracked" : "✭",
+    \ "Renamed"   : "➜",
+    \ "Unmerged"  : "═",
+    \ "Deleted"   : "✖",
+    \ "Dirty"     : "✗",
+    \ "Clean"     : "✔︎",
+    \ "Unknown"   : "?"
+    \ }
+
+
+
+
+" 语法检查''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+"始終開啟標誌列
+let g:ale_sign_column_always = 1
+
+""顯示Linter名稱,出錯或警告等相關信息
+let g:ale_completion_delay = 500
+let g:ale_echo_delay = 20
+let g:ale_lint_delay = 500
+let g:ale_echo_msg_format = '[%linter%] %code: %%s'
+let g:ale_lint_on_text_changed = 'normal'
+let g:ale_lint_on_insert_leave = 1
+let g:airline#extensions#ale#enabled = 1
+
+
+"普通模式下，sp前往上一個錯誤或警告，sn前往下一個錯誤或警告
+nmap sp <Plug>(ale_previous_wrap)
+nmap sn <Plug>(ale_next_wrap)
+
+""<Leader>s觸發/關閉語法檢查
+nmap <Leader>s :ALEToggle<CR>
+
+"<Leader>d查看錯誤或警告的詳細信息
+nmap <Leader>d :ALEDetail<CR>
+
+
+""對C/C++使用Clang進行語法檢查
+let g:ale_c_gcc_options = '-Wall -O2 -std=c99'
+let g:ale_cpp_gcc_options = '-Wall -O2 -std=c++14'
+let g:ale_c_cppcheck_options = ''
+let g:ale_cpp_cppcheck_options = ''
+
+
+
+
+
+
+" 文件搜索 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+"CTRL+P 在當前項目目錄打開文件搜索，
+"CTRL+N 打開 MRU搜索，搜索你最近打開的文件，
+"ALT+P 打開函數搜索
+"ALT+N 打開 Buffer 搜索
+
+let g:Lf_ShortcutF = '<c-p>'
+
+let g:Lf_ShortcutB = '<m-n>'
+
+noremap <c-n> :LeaderfMru<cr>
+
+noremap <F2> :LeaderfFunction<cr>
+
+noremap <F3> :LeaderfBuffer<cr>
+
+noremap <m-m> :LeaderfTag<cr>
+
+let g:Lf_StlSeparator = { 'left': '', 'right': '', 'font': '' }
+
+let g:Lf_RootMarkers = ['.project', '.root', '.svn', '.git']
+
+let g:Lf_WorkingDirectoryMode = 'Ac'
+
+let g:Lf_WindowHeight = 0.30
+
+let g:Lf_CacheDirectory = expand('~/.vim/cache')
+
+let g:Lf_ShowRelativePath = 0
+
+let g:Lf_HideHelp = 1
+
+let g:Lf_StlColorscheme = 'powerline'
+
+let g:Lf_NormalMap = {
+    \ "File":   [["<ESC>", ':exec g:Lf_py "fileExplManager.quit()"<CR>'],
+    \            ["<F6>", ':exec g:Lf_py "fileExplManager.quit()"<CR>'] ],
+    \ "Buffer": [["<ESC>", ':exec g:Lf_py "bufExplManager.quit()"<CR>'],
+    \            ["<F6>", ':exec g:Lf_py "bufExplManager.quit()"<CR>'] ],
+    \ "Mru":    [["<ESC>", ':exec g:Lf_py "mruExplManager.quit()"<CR>']],
+    \ "Tag":    [["<ESC>", ':exec g:Lf_py "tagExplManager.quit()"<CR>']],
+    \ "Function":    [["<ESC>", ':exec g:Lf_py "functionExplManager.quit()"<CR>']],
+    \ "Colorscheme":    [["<ESC>", ':exec g:Lf_py "colorschemeExplManager.quit()"<CR>']],
+    \ }
+
+
+
+
+" 自动补全''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+"augroup complete
+    
+    "autocmd!
+    "autocmd CompleteDone * pclose
+        
+"augroup end"
+"
+"
+"
+"
+"
+"
+"
+"
+"
+"
+"
+"
+autocmd BufNewFile *.php,*.js,*.py exec ":call SetCommentT()" |normal 10Go
+
+func! SetCommentT()
+
+    if expand("%:e") == 'py'
+        call setline(1,"#python")
+        call append(1, '#***********************************************')
+        call append(2, '#')
+        call append(3, '#      Filename: '.expand("%"))
+        call append(4, '#')
+        call append(5, '#        Author: Sh1Yu6')
+        call append(6, '#   Description: ---')
+        call append(7, '#        Create: '.strftime("%Y-%m-%d %H:%M:%S"))
+        call append(8, '# Last Modified: '.strftime("%Y-%m-%d %H:%M:%S"))
+        call append(9, '#***********************************************')
+        
+    endif
+
+
+endfunc
+
+autocmd BufNewFile *.cpp exec ":call SetCommentCPP()"|normal 18Go
+
+func! SetCommentCPP()
+    
+    if expand("%:e") == 'cpp'
+        call append(1, '/************************************************')
+        call append(2, '#')
+        call append(3, '#      Filename: '.expand("%"))
+        call append(4, '#')
+        call append(5, '#        Author: Sh1Yu6')
+        call append(6, '#   Description: ---')
+        call append(7, '#        Create: '.strftime("%Y-%m-%d %H:%M:%S"))
+        call append(8, '# Last Modified: '.strftime("%Y-%m-%d %H:%M:%S"))
+        call append(9, '#***********************************************/')
+        call append(10,'#include <iostream>')
+        call append(11,'#include <string>')
+        call append(12,'#include <vector>')
+        call append(13,'#include <algorithm>')
+        call append(14,'#include <cmath>')
+        call append(15,'#include <stdexcept>')
+        call append(16,'int main(int argc, char *argv[])')
+        call append(17,'{')
+        call append(18,'    return 0;')
+        call append(19,'}')
+    endif
+endfunc
+
+
+func! DataInsertT()
+
+    call cursor(9,1)
+    if search ('Last Modified') != 0
+        let line = line('.')
+        call setline(line, '# Last Modified: '.strftime("%Y-%m-%d %H:%M:%S"))
+    endif
+endfunc
+
+autocmd FileWritePre,BufWritePre *.php,*.js,*.cpp,*py ks|call DataInsertT() |'s
+
+
+
+autocmd BufWritePost $MYVIMRC source $MYVIMRC
+
+
+
+ 
+
+
