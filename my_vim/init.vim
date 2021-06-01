@@ -7,27 +7,41 @@ set softtabstop=4
 set shiftwidth=4
 set textwidth=79
 set fileformat=unix
-au BufNewFile,BufRead *.js, *.html, *.css
-\ set tabstop=2    
-\ set softtabstop=2
-\ set shiftwidth=2
 set expandtab
+set list
+set listchars=tab:▸\ ,trail:▫
 set autoindent
 set cursorline
-set wrap        
+set wrap
 set showcmd
-set wildmenu 
+set wildmenu
 set ignorecase
 set smartcase
 set showmatch
+set backspace=indent,eol,start
 set foldmethod=indent
 set foldlevel=99
 set encoding=utf-8
 set laststatus=2
 set autochdir
 set scrolloff=8
-set relativenumber
 set signcolumn=yes
+set hlsearch
+set nocompatible
+"filetype on
+"filetype indent on
+"filetype plugin on
+"filetype plugin indent on
+set colorcolumn=81
+" 基于缩进或语法进行代码折叠
+set foldmethod=indent
+"set foldmethod=syntax
+" 启动 vim 时关闭折叠代码
+"set nofoldenable
+
+
+
+
 "set splitbelow
 au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 let &t_SI = "\<Esc>]50;CursorShape=1\x7"
@@ -43,10 +57,8 @@ func! CompileRunGcc()
     exec "!time ./%<"
   elseif &filetype == 'cpp'
     set splitbelow
-    exec "!g++ -std=c++11 % -Wall -o %<"
-    :sp
-    :res -15
-    :term ./%<
+    exec "!g++ -std=c++17 % -Wall -o %<.out"
+    :term ./%<.out
   elseif &filetype == 'java'
     exec "!javac %"
     exec "!time java %<"
@@ -84,16 +96,16 @@ noremap <LEADER>z :nohlsearch<CR>
 
 " 开新窗口
 map sl :set splitright<CR>:vsplit<CR>
-map sj :set nosplitright<CR>:vsplit<CR>
-map sk :set splitbelow<CR>:split<CR>
-map si :set nosplitbelow<CR>:split<CR>
+map sh :set nosplitright<CR>:vsplit<CR>
+map sj :set splitbelow<CR>:split<CR>
+map sk :set nosplitbelow<CR>:split<CR>
 
 " 窗口位置变换
 map sv <C-w>t<C-w>H
 map sh <C-w>t<c-w>K
-map <LEADER>i <C-w>k
-map <LEADER>k <C-w>j
-map <LEADER>j <C-w>h
+map <LEADER>k <C-w>k
+map <LEADER>j <C-w>j
+map <LEADER>h <C-w>h
 map <LEADER>l <C-w>l
 
 " 调整窗口大小
@@ -111,7 +123,7 @@ map tl :+tabnext<CR>
 
 
 " 插件''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-call plug#begin('~/.config/nvim/plugged')
+call plug#begin('~/.vim/plugged')
 
 " 美化
 Plug 'flazz/vim-colorschemes'
@@ -126,9 +138,11 @@ Plug 'mhinz/vim-startify'
 " 主题选择
 Plug 'tomasr/molokai'
 Plug 'morhetz/gruvbox'
+Plug 'rakr/vim-one'
 
 " 文件树
 Plug 'scrooloose/nerdtree'
+Plug 'Xuyuanp/nerdtree-git-plugin'
 
 " 文件搜索
 Plug 'Yggdroot/LeaderF'
@@ -151,26 +165,69 @@ Plug 'ervandew/supertab'
 Plug 'vim-scripts/AutoComplPop'
 
 
-" 符号索引
-Plug 'universal-ctags/ctags'
-" 自动索引
-Plug 'ludovicchabant/vim-gutentags'   
-
-
-" 语法高亮
-Plug 'octol/vim-cpp-enhanced-highlight'
-
-" 修改比较
+"" 符号索引
+"Plug 'universal-ctags/ctags'
+"" 自动索引
+"Plug 'ludovicchabant/vim-gutentags'   
+"
+"
+"" 语法高亮
+"Plug 'octol/vim-cpp-enhanced-highlight'
+"
+"" 修改比较
 Plug 'mhinz/vim-signify'
-
-" 代码补全
+"
+"" 代码补全
 Plug 'Valloric/YouCompleteMe', { 'do': './install.py --clang-completer --go-completer'  }
 "Plug 'Shougo/echodoc.vim'
-
+"
+Plug 'derekwyatt/vim-fswitch'
 "Plug 'vim-scripts/a.vim'
 "Plug 'justinmk/vim-dirvish'
 
+Plug 'kshenoy/vim-signature'
+
+" 注释插件
+Plug 'vim-scripts/DoxygenToolkit.vim'
+Plug 'fatih/vim-go'
 call plug#end()
+
+
+" 注释``````````````````````````````````````````````````````````````
+map <F12> :Dox <CR>
+let g:DoxygenToolkit_briefTag_funcName = "no"
+
+" for C++ style, change the '@' to '\'
+"let g:DoxygenToolkit_commentType = "C++"
+let g:DoxygenToolkit_briefTag_pre = "@description:"
+let g:DoxygenToolkit_templateParamTag_pre = "@tparam: "
+let g:DoxygenToolkit_paramTag_pre = "@param: "
+let g:DoxygenToolkit_returnTag = "@return: "
+let g:DoxygenToolkit_throwTag_pre = "@throw: " " @exception is also valid
+let g:DoxygenToolkit_fileTag = "@file: "
+let g:DoxygenToolkit_dateTag = "@date: "
+let g:DoxygenToolkit_authorTag = "@author: "
+let g:DoxygenToolkit_versionTag = "@version: "
+let g:DoxygenToolkit_blockTag = "@name: "
+let g:DoxygenToolkit_classTag = "@class: "
+let g:DoxygenToolkit_authorName = "Sh1Yu6, xxx@xxx.com"
+let g:doxygen_enhanced_color = 1
+"let g:load_doxygen_syntax = 1
+
+
+
+
+
+
+
+" 参数列表''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+set noshowmode
+set cmdheight=2
+let g:echodoc_enable_at_startup = 1
+
+nmap <silent> <Leader>sw :FSHere<cr>
+
+
 
 " 语法高亮 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 let c_no_curly_error = 1
@@ -183,7 +240,9 @@ map bj :SignifyDiff<CR>
 
 
 " 代码补全'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''' 
-let g:ycm_global_ycm_extra_conf='~/.config/nvim/plugged/YouCompleteMe/third_party/ycmd/examples/.ycm_extra_conf.py'
+let g:ycm_global_ycm_extra_conf='~/.vim/plugged/YouCompleteMe/third_party/ycmd/examples/.ycm_extra_conf.py'
+"let g:ycm_autoclose_preview_window_after_completion = 1 
+"let g:ycm_autoclose_preview_window_after_insertion = 1
 let g:ycm_add_preview_to_completeopt = 0
 let g:ycm_show_diagnostics_ui = 0
 let g:ycm_server_log_level = 'info'
@@ -221,17 +280,10 @@ let g:ycm_filetype_blacklist = {
         \}"
 "
 "
-"
-"
-"
-" 参数列表''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-let g:echodoc_enable_at_startup = 1
-set cmdheight=2
-
-
-"
-"
-"
+nnoremap gd :YcmCompleter GoToDefinitionElseDeclaration<CR>
+nnoremap g/ :YcmCompleter GetDoc<CR>
+nnoremap gt :YcmCompleter GetType<CR>
+nnoremap gr :YcmCompleter GoToReferences<CR>
 "
 "
 "
@@ -259,17 +311,8 @@ endif
 "
 "
 "
-"
-"
-"
-"
-"
-"
-"
-"
-"
-"
 " 加强版状态栏 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+"let g:airline_theme='one'
 let g:airline_theme='molokai'
 
 " 字体
@@ -286,16 +329,42 @@ let g:airline#extensions#tabline#enabled = 1
 " tabline中buffer顯示編號
 let g:airline#extensions#tabline#buffer_nr_show = 1
 
+" 书签''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
+let g:SignatureMap = {
+        \ 'Leader'             :  "m",
+        \ 'PlaceNextMark'      :  "m,",
+        \ 'ToggleMarkAtLine'   :  "m.",
+        \ 'PurgeMarksAtLine'   :  "dm-",
+        \ 'DeleteMark'         :  "dm",
+        \ 'PurgeMarks'         :  "dm/",
+        \ 'PurgeMarkers'       :  "dm?",
+        \ 'GotoNextLineAlpha'  :  "m<LEADER>",
+        \ 'GotoPrevLineAlpha'  :  "",
+        \ 'GotoNextSpotAlpha'  :  "m<LEADER>",
+        \ 'GotoPrevSpotAlpha'  :  "",
+        \ 'GotoNextLineByPos'  :  "",
+        \ 'GotoPrevLineByPos'  :  "",
+        \ 'GotoNextSpotByPos'  :  "mn",
+        \ 'GotoPrevSpotByPos'  :  "mp",
+        \ 'GotoNextMarker'     :  "",
+        \ 'GotoPrevMarker'     :  "",
+        \ 'GotoNextMarkerAny'  :  "",
+        \ 'GotoPrevMarkerAny'  :  "",
+        \ 'ListLocalMarks'     :  "m/",
+        \ 'ListLocalMarkers'   :  "m?"
+        \ }
 
 
 
 " 配色 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 set background=dark
+"set background=light
 "colorscheme solarized
-"colorscheme molokai
-colorscheme gruvbox
+colorscheme molokai
+"colorscheme gruvbox
 "colorscheme phd
+"colorscheme one
 
 
 
@@ -317,6 +386,17 @@ let NERDTreeMinimalUI=1
 "刪除文件時自動刪除文件對應 buffer
 let NERDTreeAutoDeleteBuffer=1"
 
+let g:NERDTreeGitStatusIndicatorMapCustom = {
+    \ "Modified"  : "✹",
+    \ "Staged"    : "✚",
+    \ "Untracked" : "✭",
+    \ "Renamed"   : "➜",
+    \ "Unmerged"  : "═",
+    \ "Deleted"   : "✖",
+    \ "Dirty"     : "✗",
+    \ "Clean"     : "✔︎",
+    \ "Unknown"   : "?"
+    \ }
 
 
 
@@ -349,7 +429,7 @@ nmap <Leader>d :ALEDetail<CR>
 
 ""對C/C++使用Clang進行語法檢查
 let g:ale_c_gcc_options = '-Wall -O2 -std=c99'
-let g:ale_cpp_gcc_options = '-Wall -O2 -std=c++14'
+let g:ale_cpp_gcc_options = '-Wall -O2 -std=c++17'
 let g:ale_c_cppcheck_options = ''
 let g:ale_cpp_cppcheck_options = ''
 
@@ -447,7 +527,7 @@ func! SetCommentT()
 
 endfunc
 
-autocmd BufNewFile *.cpp exec ":call SetCommentCPP()"|normal 18Go
+autocmd BufNewFile *.cpp exec ":call SetCommentCPP()"|normal 16Go
 
 func! SetCommentCPP()
     
@@ -462,15 +542,11 @@ func! SetCommentCPP()
         call append(8, '# Last Modified: '.strftime("%Y-%m-%d %H:%M:%S"))
         call append(9, '#***********************************************/')
         call append(10,'#include <iostream>')
-        call append(11,'#include <string>')
-        call append(12,'#include <vector>')
-        call append(13,'#include <algorithm>')
-        call append(14,'#include <cmath>')
-        call append(15,'#include <stdexcept>')
-        call append(16,'int main(int argc, char *argv[])')
-        call append(17,'{')
-        call append(18,'    return 0;')
-        call append(19,'}')
+        call append(11,'using namespace std;')
+        call append(12,'int main(int argc, char *argv[])')
+        call append(13,'{')
+        call append(14,'    return 0;')
+        call append(15,'}')
     endif
 endfunc
 
@@ -488,8 +564,18 @@ autocmd FileWritePre,BufWritePre *.php,*.js,*.cpp,*py ks|call DataInsertT() |'s
 
 
 
+autocmd BufWritePost $MYVIMRC source $MYVIMRC
 
-
- 
-
-
+let g:go_fmt_command = "goimports" " 格式化将默认的 gofmt 替换
+let g:go_autodetect_gopath = 1
+let g:go_list_type = "quickfix"
+let g:go_version_warning = 1
+let g:go_highlight_types = 1
+let g:go_highlight_fields = 1
+let g:go_highlight_functions = 1
+let g:go_highlight_function_calls = 1
+let g:go_highlight_operators = 1
+let g:go_highlight_extra_types = 1
+let g:go_highlight_methods = 1
+let g:go_highlight_generate_tags = 1
+let g:godef_split=2
